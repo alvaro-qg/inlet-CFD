@@ -1,0 +1,53 @@
+pwd
+
+set datafile separator ","
+set title "Radial profiles for total pressure"
+set ylabel 'p_t_o_t_a_l [Pa]'
+set xlabel 'r [m]'
+set key left bottom
+set key box
+set key maxrows 4
+
+plot  "perfil_radial_ptotal.csv" using 1:2 title 'ṁ=0.271' with lines lc rgb 'black' dt 1,\
+      "perfil_radial_ptotal.csv" using 1:3 notitle with lines lc rgb 'black' dt 2,\
+      "perfil_radial_ptotal.csv" using 1:4 notitle with lines lc rgb 'black' dt 3,\
+      "perfil_radial_ptotal.csv" using 1:5 notitle with lines lc rgb 'black' dt 4,\
+      "perfil_radial_ptotal.csv" using 1:6 notitle with lines lc rgb 'black' dt 5,\
+      "perfil_radial_ptotal.csv" using 1:7 title 'ṁ=0.235' with lines lc rgb 'yellow' dt 1,\
+      "perfil_radial_ptotal.csv" using 1:8 notitle with lines lc rgb 'yellow' dt 2,\
+      "perfil_radial_ptotal.csv" using 1:9 notitle with lines lc rgb 'yellow' dt 3,\
+      "perfil_radial_ptotal.csv" using 1:10 notitle with lines lc rgb 'yellow' dt 4,\
+      "perfil_radial_ptotal.csv" using 1:11 notitle with lines lc rgb 'yellow' dt 5,\
+      "perfil_radial_ptotal.csv" using 1:12 title 'ṁ=0.194' with lines lc rgb 'green' dt 1,\
+      "perfil_radial_ptotal.csv" using 1:13 notitle with lines lc rgb 'green' dt 2,\
+      "perfil_radial_ptotal.csv" using 1:14 notitle with lines lc rgb 'green' dt 3,\
+      "perfil_radial_ptotal.csv" using 1:15 notitle with lines lc rgb 'green' dt 4,\
+      "perfil_radial_ptotal.csv" using 1:16 notitle with lines lc rgb 'green' dt 5,\
+      "perfil_radial_ptotal.csv" using 1:17 title 'ṁ=0.302' with lines lc rgb 'red' dt 1,\
+      "perfil_radial_ptotal.csv" using 1:18 notitle with lines lc rgb 'red' dt 2,\
+      "perfil_radial_ptotal.csv" using 1:19 notitle with lines lc rgb 'red' dt 3,\
+      "perfil_radial_ptotal.csv" using 1:20 notitle with lines lc rgb 'red' dt 4,\
+      "perfil_radial_ptotal.csv" using 1:21 notitle with lines lc rgb 'red' dt 5,\
+      "perfil_radial_ptotal.csv" using 1:22 title 'ṁ=0.143' with lines lc rgb 'purple' dt 1,\
+      "perfil_radial_ptotal.csv" using 1:23 notitle with lines lc rgb 'purple' dt 2,\
+      "perfil_radial_ptotal.csv" using 1:24 notitle with lines lc rgb 'purple' dt 3,\
+      "perfil_radial_ptotal.csv" using 1:25 notitle with lines lc rgb 'purple' dt 4,\
+      "perfil_radial_ptotal.csv" using 1:26 notitle with lines lc rgb 'purple' dt 5,\
+      "perfil_radial_ptotal.csv" using 1:27 title 'ṁ=0.106' with lines lc rgb 'orange' dt 1,\
+      "perfil_radial_ptotal.csv" using 1:28 notitle with lines lc rgb 'orange' dt 2,\
+      "perfil_radial_ptotal.csv" using 1:29 notitle with lines lc rgb 'orange' dt 3,\
+      "perfil_radial_ptotal.csv" using 1:30 notitle with lines lc rgb 'orange' dt 4,\
+      "perfil_radial_ptotal.csv" using 1:31 notitle with lines lc rgb 'orange' dt 5,\
+      "perfil_radial_ptotal.csv" using 1:32 title 'ṁ=0.074' with lines lc rgb 'blue' dt 1,\
+      "perfil_radial_ptotal.csv" using 1:33 notitle with lines lc rgb 'blue' dt 2,\
+      "perfil_radial_ptotal.csv" using 1:34 notitle with lines lc rgb 'blue' dt 3,\
+      "perfil_radial_ptotal.csv" using 1:35 notitle with lines lc rgb 'blue' dt 4,\
+      "perfil_radial_ptotal.csv" using 1:36 notitle with lines lc rgb 'blue' dt 5,\
+      NaN title 'x=0.075' lc rgb 'black' dt 1,\
+      NaN title 'x=0.1' lc rgb 'black' dt 2,\
+      NaN title 'x=0.1295' lc rgb 'black' dt 3,\
+      NaN title 'x=0.16' lc rgb 'black' dt 4,\
+      NaN title 'x=0.18' lc rgb 'black' dt 5
+
+        
+pause -1 "Hit any key to continue"

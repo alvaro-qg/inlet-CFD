@@ -1,0 +1,18 @@
+pwd
+
+set datafile separator ","
+set title "Axial profiles for Ur"
+set ylabel 'Ur [m/s]'
+set xlabel 'x [m]'
+set key right bottom
+
+plot  "perfil_axial_ur.csv" using 1:2 title 'ṁ=0.271' with lines lc rgb 'black' dt 1,\
+      "perfil_axial_ur.csv" using 1:3 notitle with lines lc rgb 'black' dt 2,\
+      "perfil_axial_ur.csv" using 1:4 notitle with lines lc rgb 'black' dt 3,\
+      "perfil_axial_ur.csv" using 1:5 notitle with lines lc rgb 'black' dt 4,\
+      NaN title 'r=0' lc rgb 'black' dt 1,\
+      NaN title 'r=0.015' lc rgb 'black' dt 2,\
+      NaN title 'r=0.03' lc rgb 'black' dt 3,\
+      NaN title 'r=0.045' lc rgb 'black' dt 4
+        
+pause -1 "Hit any key to continue"
