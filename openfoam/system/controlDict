@@ -1,0 +1,168 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+  =========                 |
+  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+   \\    /   O peration     | Website:  https://openfoam.org
+    \\  /    A nd           | Version:  7
+     \\/     M anipulation  |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    location    "system";
+    object      controlDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+application     pisoFoam; //Solver that it's being used
+
+startFrom       startTime; //Control of the start time of the simulation
+
+startTime       0; //Specified start time by keyword
+
+stopAt          endTime; //Control of the end time of the simulation 
+
+endTime         0.8; //Specified end time by keyword
+
+deltaT          0.000001; //Time step of the simulation
+
+writeControl    timeStep; //Control of the timing of writing of the output data
+
+writeInterval   1000; //Writes data every writeInteraval time steps.The simulated time in seconds it's the product between these two values. Eg: deltaT*writeInterval = 0.01*10=0.1 seconds. 
+
+purgeWrite      5; //Limits the number of stored time directories by deleting older ones as the simulations go on, Disabled.
+
+writeFormat     binary; //Specifies the format of the data files
+
+writePrecision  6; //Only used in combination with ASCII format
+
+writeCompression off; //Files won't be compressed
+
+timeFormat      general; // Format of the naming of time directories created in simulation. The general format uses the scientific format only if the exponent is less than -4 or greater than or equal to the timePrecision value.
+
+timePrecision   6; //Integer used in combination with timeFormat
+
+runTimeModifiable true; //Allows to modify parameters while running the simulation. E.g: ControlDict is re-read at the beggining of each time step.
+
+
+
+functions
+{
+ Forces
+ {
+  patches (bellmouth_wall);
+  porosity no;
+  CofR (0 0 0);
+  writeControl timeStep ;
+  writeInterval 1000;
+  type forces;
+  libs ("libforces.so");
+  p p;
+  U U;
+  rho rhoInf;
+  rhoInf 1.225;
+  pRef 0;
+  writeFields yes;
+ }
+
+ Residuals
+ {
+  type residuals;
+  libs ("libutilityFunctionObjects.so");
+  writeControl timeStep;
+  writeInterval 1000;
+  fields (p U k omega);
+ }
+
+ CourantNumber
+ {
+  type CourantNo;
+  writeControl timeStep;
+  writeInterval 1000;
+  libs ("libfieldFunctionObjects.so");
+  field phi;
+ }
+
+ //wallShearStress
+ //{
+  //type wallShearStress;
+  //writeControl timeStep;
+  //writeInterval 1000;
+  //libs ("libfieldFunctionObjects.so") ;
+ //}
+
+ yplus
+ {
+  type yPlus;
+  writeControl timeStep;
+  writeInterval 1000;
+  libs ("libfieldFunctionObjects.so");
+  patches (bellmouth_wall);
+ }
+ 
+ //Vorticity
+ //{
+  //type vorticity;
+  //functionObjectLibs ("libfieldFunctionObjects.so"); 
+  //writeControl timeStep;
+  //writeInterval 1000;
+ //}
+
+ outletMassflow
+ {
+  type surfaceFieldValue;
+  functionObjectLibs ("libfieldFunctionObjects.so");
+  enabled true;
+  writeControl timeStep;
+  writeInterval 1000;
+  writeFields false;
+  regionType patch;
+  name intake_exit;
+  operation sum;
+  fields
+  (phi);
+ }
+
+ probes
+ {
+  functionObjectLibs ("libsampling.so");
+  type probes;
+  name probes;
+  fields (p U);
+  probeLocations ((0 0 0) (0.08 0 0) (0.16 0 0));
+  writeControl timeStep ;
+  writeInterval 1000;
+ }
+
+ static_probes
+ {
+  functionObjectLibs ("libsampling.so");
+  type probes;
+  name static_probes;
+  fields (p);
+  probeLocations ((0.08 0.0555 0) (0.10 0.0555 0) (0.14 0.0555 0) (0.16 0.0555 0));
+  writeControl timeStep ;
+  writeInterval 1000;
+ }
+
+ total_probes
+ {
+  functionObjectLibs ("libsampling.so");
+  type probes;
+  name total_probes;
+  fields (p U);
+  probeLocations ((0.12 0 0) (0.12 0.0125 0) (0.12 0.025 0) (0.12 0.0375 0));
+  writeControl timeStep ;
+  writeInterval 1000;
+ }
+
+
+
+
+
+ }
+
+}
+
+// ************************************************************************* //

@@ -1,0 +1,51 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+  =========                 |
+  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+   \\    /   O peration     | Website:  https://openfoam.org
+    \\  /    A nd           | Version:  7
+     \\/     M anipulation  |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       volVectorField;
+    object      U;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+dimensions      [0 1 -1 0 0 0 0]; //Dimensions of speed: m/s
+
+internalField   uniform (0 0 0); // Initial conditions.The speed is 0 inside the domain field at startTime. On-ground testing doesn't have air moving at the inlet.
+
+boundaryField // Boundary conditions defined at the patches of the domain boundaries.
+{
+    intake_exit  //Compressor inlet at the bellmouth outlet
+    {
+       type            zeroGradient;
+    }
+
+
+    atmosphere
+    {
+        type            zeroGradient;
+    }   
+
+    bellmouth_wall
+    {
+        type            noSlip; //The noSlip condition indicates that at the wall suraface the velocity is equal to 0.
+    }
+
+    wedge1
+    {
+        type            wedge; // Geometric constrictions that are not generic of the domain are conserved in boundary conditions
+    }
+
+    wedge2
+    {
+        type            wedge; // Eg: Patch is a generic constricion, wedge isn't and thus is conserved.
+    }
+
+}
+
+// ************************************************************************* //

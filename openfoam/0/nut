@@ -1,0 +1,55 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+  =========                 |
+  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+   \\    /   O peration     | Website:  https://openfoam.org
+    \\  /    A nd           | Version:  7
+     \\/     M anipulation  |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       volScalarField;
+    location    "0";
+    object      nut;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+dimensions      [0 2 -1 0 0 0 0];
+
+internalField   uniform 0;
+
+boundaryField
+{
+    intake_exit  //Compressor inlet at the bellmouth outlet
+    {
+        type            calculated;
+        value           uniform 0;
+    }
+
+    atmosphere
+    {
+        type            calculated;
+        value           uniform 0;
+    }
+
+
+    bellmouth_wall
+    {
+        type            nutkWallFunction;
+        value           uniform 0;
+    }
+
+    wedge1
+    {
+        type            wedge; // Geometric constrictions that are not generic of the domain are conserved in boundary conditions
+    }
+
+    wedge2
+    {
+        type            wedge;
+    }
+}
+
+
+// ************************************************************************* //

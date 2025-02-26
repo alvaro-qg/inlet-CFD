@@ -1,0 +1,54 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+  =========                 |
+  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+   \\    /   O peration     | Website:  https://openfoam.org
+    \\  /    A nd           | Version:  7
+     \\/     M anipulation  |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       volScalarField;
+    object      p;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+dimensions      [0 2 -2 0 0 0 0]; // Dimensions of kinematic pressure: m^2/s^2. Pressure divided by density.
+
+internalField   uniform 0; // Using the gauge pressure so that p_gauge=p-p0. Where p0 is the atmospheric pressure p0=101325.
+
+boundaryField // Boundary conditions defined at the patches of the domain boundaries.
+{
+    intake_exit  //Compressor inlet at the bellmouth outlet
+    {
+        type            fixedValue;
+        value           uniform -20.40816;
+    }
+
+    atmosphere
+    {
+        type            totalPressure;
+        rho             none;
+        p0              uniform 0;
+        value           uniform 0;
+    }
+
+
+    bellmouth_wall
+    {
+        type            zeroGradient;
+    }
+
+    wedge1
+    {
+        type            wedge; // Geometric constrictions that are not generic of the domain are conserved in boundary conditions
+    }
+
+    wedge2
+    {
+        type            wedge;
+    }
+}
+
+// ************************************************************************* //
