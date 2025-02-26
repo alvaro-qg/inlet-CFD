@@ -1,0 +1,214 @@
+//Gmsh project 
+SetFactory("OpenCASCADE");
+Mesh.ScalingFactor=0.001;
+
+//GEOMETRY PARAMETERS
+R_i=100.8; //Entry radius of the bellmouth inlet 1.8 times the outlet radius
+R_o=56; //Exit radius of the bellmouth outlet
+L_v=75; //Axial length where the profile radius changes
+L_c=105; //Axial length where the profile radius is constant
+L=L_v + L_c; //Full length from tip to tip, divided into two parameters for design ease
+th=2; //Thickness of the profile
+R_c=12; //Entry corner radius at the bellmouth lip
+
+//Bellmouth parameters info
+Printf('Length L = %g',L_v+L_c);
+Printf('Length of variable R_c along the bellmouth axis L_v = %g',L_v);
+Printf('Length of constant R_c along the bellmouth axis L_v = %g',L_c);
+Printf('Exit diameter De = %g',2*R_o);
+Printf('Entry diameter Di = %g',2*R_i);
+Printf('Entry corner radius R_c = %g',R_c);
+
+// BELLMOUTH PROFILE
+Point(1) = {0, R_i, 0, 1.0};
+Point(2) = {L_v, R_i, 0, 1.0};
+Point(3) = {2*L_v, R_i, 0, 1.0};
+Point(4) = {L_v, R_o, 0, 1.0};
+Point(5) = {th, R_i, 0, 1.0};
+Point(6) = {(2*L_v)-(2*th), R_i, 0, 1.0};
+Point(7) = {L_v, R_o+th, 0, 1.0};
+Point(8) = {L, R_o+th, 0, 1.0};
+Point(9) = {L, R_o, 0, 1.0};
+Point(10) = {R_c, R_i, 0, 1.0};
+Point(11) = {R_c, R_i+R_c-th, 0, 1.0};
+Point(12) = {R_c, R_i+R_c, 0, 1.0};
+
+
+//NEAR-WALL REGIONS
+L_layer=10; //Parameter that controls the near-wall regions thickness
+alpha=Acos(L_layer/(L_layer+R_c));
+c1=(L_layer+R_c)*Sin(alpha);
+c2=L_layer*Tan(20*Pi/180);
+Point(50) = {L_v, R_o-L_layer, 0, 1.0};
+Point(51) = {L, R_o-L_layer, 0, 1.0};
+Point(52) = {-L_layer, R_i, 0, 1.0};
+Point(53) = {L, R_o+th+L_layer , 0, 1.0};
+Point(54) = {L_v, R_o+th+L_layer , 0, 1.0};
+Point(55) = {th + L_layer, R_i , 0, 1.0};
+Point(56) = {R_c+L_layer  , R_i+R_c-th-c2 , 0, 1.0};
+Point(57) = {R_c+L_layer,R_i,0,1.0};
+Point(58) = {R_c+L_layer, R_i+c1, 0, 1.0};
+Point(59) = {L_v, 0, 0, 1.0};
+Point(60) = {-R_i-L_layer, 0, 0, 1.0};
+Point(61) = {-L_layer, 0, 0, 1.0};
+Line(101) = {51,9};
+Line(102) = {4,50};
+Line(103) = {50,51};
+Ellipse(104) = {52, 2, 3, 50};
+Line(105) = {52,1};
+Circle(106) = {58, 10, 52};
+Line(108) = {8,53};
+Line(109) = {53,54};
+Line(110) = {54,7};
+Ellipse(111) = {54, 2, 6, 55};
+Line(112) = {55,5};
+Line(113) ={55,56};
+Line(114) ={11,56};
+Line(116) ={12,58};
+Line(117) ={58,56};
+Line(118) ={50,59};
+Circle(119) = {52, 61, 60};
+
+// FLUID DOMAIN REGION
+Point(13) = {L,0, 0, 1.0};
+Point(14) = {L, 25*R_o, 0, 1.0}; // The length will be 25 times the outlet radius
+Point(15) = {L-(25*R_o),0, 0, 1.0};
+Line(16)= {13,51};
+Line(17) = {9, 4};
+Ellipse(18) = {1, 2, 3, 4};
+Circle(19) = {1, 10, 12};
+Line(20) = {12, 11};
+Circle(21) = {5, 10, 11};
+Ellipse(22) = {5, 2, 6, 7};
+Line(23) = {7, 8};
+Line(24) = {53, 14};
+Circle(25) = {14,13,15};
+Line(26) = {13, 59};
+Line(27) = {59, 60};
+Line(28) = {60, 15};
+
+// MAIN SURFACES
+//Fluid-domain surface
+Curve Loop(200) = {119, 28, -25, -24, 109, 111, 113, -117, 106};
+Plane Surface(300) = {200};
+
+//Near-wall surfaces
+Line Loop(201) = {102, -104, 105, 18};
+Plane Surface(301) = {201};
+Line Loop(202) = {105, 19, 116, 106};
+Plane Surface(302) = {202};
+Line Loop(203) = {116, 117, -114, -20};
+Plane Surface(303) = {203};
+Line Loop(204) = {114, -113, 112, 21};
+Plane Surface(304) = {204};
+Line Loop(205) = {112, 22, -110, 111};
+Plane Surface(305) = {205};
+Line Loop(206) = {110, 23, 108, 109};
+Plane Surface(306) = {206};
+Curve Loop(207) = {102, 103, 101, 17};
+Plane Surface(307) = {207};
+Curve Loop(208) = {103, -16, 26, -118};
+Plane Surface(308) = {208};
+Curve Loop(209) = {104, 118, 27, -119};
+Plane Surface(309) = {209};
+
+// WEDGE EXTRUSION
+Rotate {{1,0,0},{0,0,0},0.5*Pi/180.0}
+{
+	Surface{300:309};
+}
+
+new_entities[] = Extrude {{1,0,0},{0,0,0},-1*Pi/180.0}
+{
+	Surface{300:309};
+	Layers{1};
+	Recombine;
+};
+
+// NEAR-WALL FIRST CELL DISTANCE
+rho=1.225;
+U=22.7;
+L=L/1000; // From milimeters to meters
+mu=1.8*(10^-5);
+Re=(rho*U*L)/mu;
+Printf('Reynolds nuber at the inlet is Re = %g',Re);
+Cf=(2*Log10(Re)-0.65)^(-2.3);
+tau_w=0.5*Cf*rho*(U^2);
+u_asterisk=Sqrt(tau_w/rho);
+y_plus=2;
+y=1000*(y_plus*mu)/(rho*u_asterisk); // x1000 to convert to mm
+Printf('The first element wall distanace in mm should be y = %g',y);
+
+// In order to implement this distance in GMSH:
+k=1.1;
+l1=y;
+
+N=Ceil(Log10(1-(L_layer*(1-k)/l1))/Log10(k));
+Printf('The number of elements in wall-normal direction is N = %g',N);
+l1_real=L_layer*((1-k)/(1-(k^N))); // Real distance calculated from the previous aproximations 
+Printf('The real aproximated distance of the first element is y_mesh = %g',l1_real);
+N=N+1; // In GMSH the input needed is the number of centroids which is the number of elements + 1
+
+// MESH DEFINITION
+//Far field
+Transfinite Curve {121} = 15 Using Progression 1.1;
+Transfinite Curve {123} = 31 Using Progression 1.1;
+Transfinite Curve {122} = 13 Using Progression 1;
+
+// Region of interest
+Transfinite Surface {308} = {82, 81, 79, 72};
+Recombine Surface {308};
+Transfinite Curve {146} = 31 Using Progression 1/1.05;
+Transfinite Curve {148} = 31 Using Progression 1.05;
+Transfinite Curve {147} = 11 Using Progression 1;
+
+Transfinite Surface {309} = {82, 72, 62, 63};
+Recombine Surface {309};
+Transfinite Curve {120} = 31 Using Progression 1.05;
+Transfinite Curve {149} = 27 Using Progression 1/1.05;
+
+Transfinite Surface {307} = {71, 80, 79, 72};
+Recombine Surface {307};
+Transfinite Curve {143, 145} = 11 Using Progression 1;
+
+Transfinite Surface {301} = {62, 73, 71, 72};
+Recombine Surface {301};
+Transfinite Curve {130} = 27 Using Progression 1.05;
+Transfinite Curve {132} = 27 Using Progression 1.05;
+
+Transfinite Surface {302} = {62, 73, 74, 70};
+Recombine Surface {302};
+Transfinite Curve {128} = 25 Using Progression 1.01;
+Transfinite Curve {133} = 25 Using Progression 1/1.01;
+
+Transfinite Surface {303} = {74, 70, 69, 75};
+Recombine Surface {303};
+Transfinite Curve {127} = 17 Using Progression 1/1.1;
+Transfinite Curve {136} = 17 Using Progression 1/1.1;
+
+Transfinite Surface {304} = {76, 68, 69, 75};
+Recombine Surface {304};
+Transfinite Curve {126} = 28 Using Progression 1/1.08;
+Transfinite Curve {138} = 28 Using Progression 1/1.08;
+
+Transfinite Surface {305} = {76, 68, 67, 77};
+Recombine Surface {305};
+Transfinite Curve {139} = 25 Using Progression 1.05;
+Transfinite Curve {125} = 25 Using Progression 1/1.05;
+
+Transfinite Surface {306} = {77, 67, 66, 78};
+Recombine Surface {306};
+Transfinite Curve {124} = 21 Using Progression 1.1;
+Transfinite Curve {141} = 21 Using Progression 1/1.1;
+
+// Wall-normal lines
+Transfinite Curve {137,140,144,131} = N Using Progression 1/k;
+Transfinite Curve {129,134,135,142} = N Using Progression k;
+
+// FLUID DOMAIN BOUNDARIES
+Physical Surface("atmosphere") = {311,312,337};
+Physical Surface("intake_exit") = {340, 343};
+Physical Surface("bellmouth_wall") = {341, 336, 333, 322, 324, 328, 331};
+Physical Surface("wedge1") = {300, 309, 308, 307, 306, 301, 305, 302, 303, 304};
+Physical Surface("wedge2") = {318, 346, 345, 342, 338, 323, 335, 326, 329, 332};
+Physical Volume(1000) = {1, 3, 4, 5, 10, 2, 6, 7, 8, 9};
